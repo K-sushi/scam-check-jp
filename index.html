@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投資の誘いチェック</title>
+<meta name="description" content="SNS や LINE で届いた投資の誘いが、詐欺の典型に当てはまるかを調べます。入力した文は端末の外に送りません。">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --line: #d0d0d0;
+    --high: #b00020; --high-bg: #fdecee; --warn: #8a5300; --warn-bg: #fff4e0;
+    --none: #1f4e79; --none-bg: #eaf2fb; --btn: #1a1a1a; --btn-fg: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --fg: #f0f0f0; --muted: #b0b0b0; --line: #3a3a3a;
+      --high: #ff8a95; --high-bg: #3a1418; --warn: #ffc56b; --warn-bg: #352708;
+      --none: #9cc6f0; --none-bg: #102536; --btn: #f0f0f0; --btn-fg: #121212;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+    font-size: 19px; line-height: 1.75; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.5rem; line-height: 1.4; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  .privacy { border-left: 4px solid var(--line); padding: 4px 12px; margin: 0 0 20px; font-size: 0.9rem; color: var(--muted); }
+  label { display: block; font-weight: 700; margin-bottom: 6px; }
+  textarea { width: 100%; min-height: 180px; font: inherit; padding: 12px;
+    border: 2px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
+  textarea:focus-visible, button:focus-visible { outline: 3px solid var(--none); outline-offset: 2px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  button { font: inherit; font-weight: 700; min-height: 52px; padding: 0 24px; border-radius: 8px;
+    border: 2px solid var(--btn); background: var(--btn); color: var(--btn-fg); cursor: pointer; }
+  button.secondary { background: transparent; color: var(--fg); }
+  #result { margin-top: 28px; }
+  .verdict { border-radius: 10px; padding: 16px; font-weight: 700; font-size: 1.1rem; }
+  .verdict.high { background: var(--high-bg); color: var(--high); border: 2px solid var(--high); }
+  .verdict.caution { background: var(--warn-bg); color: var(--warn); border: 2px solid var(--warn); }
+  .verdict.no-match { background: var(--none-bg); color: var(--none); border: 2px solid var(--none); }
+  .hits { list-style: none; padding: 0; margin: 16px 0 0; }
+  .hits li { border-top: 1px solid var(--line); padding: 12px 0; }
+  .hits strong { display: block; }
+  .hits small { color: var(--muted); }
+  .hits a { color: inherit; }
+  .call { margin-top: 20px; padding: 16px; border: 2px solid var(--fg); border-radius: 10px; }
+  .call a { color: inherit; font-size: 1.4rem; font-weight: 700; }
+  details { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 12px; }
+  summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+  #copied { color: var(--muted); margin-left: 8px; }
+  footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>投資の誘いチェック</h1>
+  <p class="lead">SNS・LINE・マッチングアプリで届いた投資やお金の話を貼ると、詐欺によく出る特徴があるかを調べます。</p>
+  <p class="privacy">貼った文は<strong>この端末の中だけ</strong>で調べ、どこにも送りません。AI も使っていません。</p>
+
+  <label for="msg">届いたメッセージを貼ってください</label>
+  <textarea id="msg" placeholder="例: 必ずもうかる投資方法を教えます。LINE のグループに招待しますので ID を追加してください"></textarea>
+  <div class="row">
+    <button id="run" type="button">調べる</button>
+    <button id="clear" type="button" class="secondary">消す</button>
+  </div>
+
+  <section id="result" aria-live="polite"></section>
+
+  <footer>
+    判定の根拠は、<a href="https://www.npa.go.jp/bureau/safetylife/sos47/case/sns-romance/investment/" rel="noopener" target="_blank">警察庁 SOS47「SNS型投資詐欺」</a>などの公開情報です。
+    この道具は判断の手助けで、詐欺かどうかを決めるものではありません。
+    <a href="https://github.com/K-sushi/scam-check-jp" rel="noopener" target="_blank">ソースコード (MIT ライセンス)</a>
+  </footer>
+</main>
+
+<script type="module">
+  import { check, VERDICT_TEXT, SOURCES, buildAiPrompt } from "./rules.mjs";
+
+  const msg = document.getElementById("msg");
+  const out = document.getElementById("result");
+
+  function el(tag, attrs = {}, ...children) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    for (const c of children) e.append(c);
+    return e;
+  }
+
+  function render() {
+    const text = msg.value.trim();
+    out.replaceChildren();
+    if (!text) { out.append(el("p", {}, "メッセージを貼ってから「調べる」を押してください。")); return; }
+
+    const r = check(text);
+    out.append(el("div", { class: `verdict ${r.verdict}` }, VERDICT_TEXT[r.verdict]));
+
+    if (r.hits.length) {
+      const ul = el("ul", { class: "hits" });
+      for (const h of r.hits) {
+        const s = SOURCES[h.source];
+        const src = el("a", { href: s.url, target: "_blank", rel: "noopener" }, s.name);
+        ul.append(el("li", {}, el("strong", {}, h.label), h.why, el("br"), el("small", {}, "出典: ", src)));
+      }
+      out.append(ul);
+    }
+
+    out.append(el("div", { class: "call" },
+      "相談は 警察相談専用電話 ", el("a", { href: "tel:#9110" }, "#9110"),
+      el("br"), "お金を払う・送る前に、相手に返事をする前に、まず相談してください。"));
+
+    const copyBtn = el("button", { type: "button", class: "secondary" }, "文面をコピーする");
+    const copied = el("span", { id: "copied" });
+    copyBtn.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(buildAiPrompt(text, r)); copied.textContent = "コピーしました"; }
+      catch { copied.textContent = "コピーできませんでした。手で選んでコピーしてください。"; }
+    });
+    out.append(el("details", {},
+      el("summary", {}, "もっと詳しく考えたい人へ (自分の AI に聞く)"),
+      el("p", {}, "ChatGPT や Claude などを使っている人は、この文面をコピーして貼ると、続きを一緒に考えてもらえます。"
+        + "貼る前に、名前・電話番号・口座番号は消してください。"),
+      el("div", { class: "row" }, copyBtn, copied)));
+  }
+
+  document.getElementById("run").addEventListener("click", render);
+  document.getElementById("clear").addEventListener("click", () => { msg.value = ""; out.replaceChildren(); msg.focus(); });
+</script>
+</body>
+</html>
