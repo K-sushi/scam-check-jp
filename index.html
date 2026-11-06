@@ -34,17 +34,6 @@
   button { font: inherit; font-weight: 700; min-height: 52px; padding: 0 24px; border-radius: 8px;
     border: 2px solid var(--btn); background: var(--btn); color: var(--btn-fg); cursor: pointer; }
   button.secondary { background: transparent; color: var(--fg); }
-  h2.step { font-size: 1.15rem; margin: 28px 0 12px; }
-  fieldset { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 14px 0; }
-  legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
-  .choices { display: flex; gap: 8px; flex-wrap: wrap; }
-  .choices label { margin: 0; font-weight: 700; }
-  .choices input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .choices span { display: inline-flex; align-items: center; min-height: 52px; min-width: 88px; justify-content: center;
-    padding: 0 16px; border: 2px solid var(--line); border-radius: 8px; cursor: pointer; }
-  .choices input:checked + span { border-color: var(--fg); background: var(--fg); color: var(--bg); }
-  .choices input:focus-visible + span { outline: 3px solid var(--none); outline-offset: 2px; }
-  .need { color: var(--high); font-weight: 700; }
   #result { margin-top: 28px; }
   .verdict { border-radius: 10px; padding: 16px; font-weight: 700; font-size: 1.1rem; }
   .verdict.high { background: var(--high-bg); color: var(--high); border: 2px solid var(--high); }
@@ -67,14 +56,10 @@
 <body>
 <main>
   <h1>投資の誘いチェック</h1>
-  <p class="lead">SNS・LINE・マッチングアプリなどで知り合った相手からの、投資やお金の話について、詐欺によく出る状況や特徴があるかを調べます。</p>
+  <p class="lead">SNS・LINE・マッチングアプリで届いた投資やお金の話を貼ると、詐欺によく出る特徴があるかを調べます。</p>
   <p class="privacy">貼った文は<strong>この端末の中だけ</strong>で調べ、どこにも送りません。AI も使っていません。</p>
 
-  <h2 class="step">1. 4 つの質問に答えてください</h2>
-  <div id="questions"></div>
-
-  <h2 class="step">2. 届いたメッセージ (あれば)</h2>
-  <label for="msg">相手から届いた文を貼ってください (無くても調べられます)</label>
+  <label for="msg">届いたメッセージを貼ってください</label>
   <textarea id="msg" placeholder="例: 必ずもうかる投資方法を教えます。LINE のグループに招待しますので ID を追加してください"></textarea>
   <div class="row">
     <button id="run" type="button">調べる</button>
@@ -93,35 +78,10 @@
 </main>
 
 <script type="module">
-  import { assess, QUESTIONS, VERDICT_TEXT, SOURCES, SITUATION_SOURCES, buildAiPrompt } from "./rules.mjs";
+  import { check, VERDICT_TEXT, SOURCES, buildAiPrompt } from "./rules.mjs";
 
   const msg = document.getElementById("msg");
   const out = document.getElementById("result");
-  const qBox = document.getElementById("questions");
-  const CHOICES = [["yes", "はい"], ["no", "いいえ"], ["unknown", "わからない"]];
-
-  for (const q of QUESTIONS) {
-    const fs = document.createElement("fieldset");
-    const lg = document.createElement("legend");
-    lg.textContent = q.text;
-    const row = document.createElement("div");
-    row.className = "choices";
-    for (const [value, label] of CHOICES) {
-      const l = document.createElement("label");
-      const i = document.createElement("input");
-      i.type = "radio"; i.name = q.id; i.value = value;
-      const s = document.createElement("span");
-      s.textContent = label;
-      l.append(i, s); row.append(l);
-    }
-    fs.append(lg, row); qBox.append(fs);
-  }
-
-  function readAnswers() {
-    const a = {};
-    for (const q of QUESTIONS) a[q.id] = document.querySelector(`input[name="${q.id}"]:checked`)?.value;
-    return a;
-  }
 
   function el(tag, attrs = {}, ...children) {
     const e = document.createElement(tag);
@@ -132,31 +92,21 @@
 
   function render() {
     const text = msg.value.trim();
-    const answers = readAnswers();
     out.replaceChildren();
-    const missing = QUESTIONS.filter((q) => !answers[q.id]);
-    if (missing.length) {
-      out.append(el("p", { class: "need" }, `答えていない質問が ${missing.length} つあります。わからない時は「わからない」を選んでください。`));
-      return;
-    }
+    if (!text) { out.append(el("p", {}, "メッセージを貼ってから「調べる」を押してください。")); return; }
 
-    const a = assess({ answers, text });
-    out.append(el("div", { class: `verdict ${a.verdict}` }, VERDICT_TEXT[a.verdict]));
+    const r = check(text);
+    out.append(el("div", { class: `verdict ${r.verdict}` }, VERDICT_TEXT[r.verdict]));
 
-    const items = [
-      ...a.situation.reasons.map((s) => ({ label: s.label, why: "", src: SITUATION_SOURCES[s.source] })),
-      ...a.message.hits.map((h) => ({ label: h.label, why: h.why, src: SOURCES[h.source] })),
-    ];
-    const r = { hits: a.message.hits };
-    if (items.length) {
+    if (r.hits.length) {
       const ul = el("ul", { class: "hits" });
-      for (const it of items) {
-        const src = el("a", { href: it.src.url, target: "_blank", rel: "noopener" }, it.src.name);
-        ul.append(el("li", {}, el("strong", {}, it.label), it.why, it.why ? el("br") : "", el("small", {}, "出典: ", src)));
+      for (const h of r.hits) {
+        const s = SOURCES[h.source];
+        const src = el("a", { href: s.url, target: "_blank", rel: "noopener" }, s.name);
+        ul.append(el("li", {}, el("strong", {}, h.label), h.why, el("br"), el("small", {}, "出典: ", src)));
       }
       out.append(ul);
     }
-
 
     out.append(el("div", { class: "call" },
       "相談は 警察相談専用電話 ", el("a", { href: "tel:#9110" }, "#9110"),
@@ -176,11 +126,7 @@
   }
 
   document.getElementById("run").addEventListener("click", render);
-  document.getElementById("clear").addEventListener("click", () => {
-    msg.value = ""; out.replaceChildren();
-    document.querySelectorAll('#questions input').forEach((i) => { i.checked = false; });
-    document.querySelector('#questions input')?.focus();
-  });
+  document.getElementById("clear").addEventListener("click", () => { msg.value = ""; out.replaceChildren(); msg.focus(); });
 </script>
 </body>
 </html>

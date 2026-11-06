@@ -22,8 +22,7 @@ export const RULES = [
     why: "引き出しの前に「手数料」「税金」「保証金」を求めるのは、被害の最終段階の典型です。払っても戻りません。",
     // 「出金」と「手数料」が並ぶだけでは当てない (正規の業者のお知らせにも出る)。
     // 同じ文の中に「払え・入金しろ」という要求があるときだけ当てる。
-    // v2: 語尾 (です / だ / となります) を条件から外した。「出金には手数料が必要だ」を初版は見逃した。
-    pattern: /(出金|引き?出|払い?戻|換金|解約|凍結解除|ロック解除|返金)[^。\n]{0,30}(手数料|税金|税|保証金|解除金|費用|供託金)[^。\n]{0,30}(入金|振り?込|支払|払う|払え|払って|払わ|送金|納め|必要|かか|請求)|(手数料|税金|保証金|解除金)として[^。\n]{0,20}(払|振り?込|入金|送金)/,
+    pattern: /(出金|引き?出|払い?戻|換金|解約|凍結解除|ロック解除)[^。\n]{0,30}(手数料|税金|税|保証金|解除金|費用|供託金)[^。\n]{0,30}(入金し|振り?込(んで|み[をが])|支払(って|い[をが])|払って|送金し|納めて|必要です)/,
     source: "npa",
   },
   {
@@ -39,8 +38,7 @@ export const RULES = [
     level: "warn",
     label: "「必ず」「確実に」「絶対」もうかると言っている",
     why: "元本や利益を保証する投資はありません。断定的な儲け話は詐欺の入口です。",
-    // v2: 「損はしない」「必ず値上がる」「簡単にもうかる」「誰でもできる」を単独でも当てる (初版は見逃した)
-    pattern: /(必ず|確実に?|絶対(に)?|100\s*%|間違いなく|リスク(は)?(ゼロ|なし|ありません)).{0,15}(儲|もう|利益|稼|増え|倍|勝|値上が|上が)|損(は|を)?(しない|させない|することはない)|(簡単|楽)に(もうか|儲か|稼)|誰でも(簡単に)?(できる|稼げ|儲か|もうか)|返金保証/,
+    pattern: /(必ず|確実に?|絶対(に)?|100\s*%|１００％|間違いなく|損(は)?しない|リスク(は)?(ゼロ|なし|ありません)).{0,15}(儲|もう|利益|稼|増え|倍|勝)/,
     source: "npa",
   },
   {
@@ -100,15 +98,6 @@ export const RULES = [
     source: "npa",
   },
   {
-    id: "money-request",
-    level: "warn",
-    label: "名目をつけて、お金を払う・送る・貸すよう求めている",
-    why: "「保釈金」「関税」「旅費」「配送料」「調査費用」など、もっともらしい理由でお金を求めるのは、ロマンス詐欺やなりすまし詐欺の典型です。",
-    // v2 で追加。初版の評価で見逃した文の最大の型。
-    pattern: /(保釈金|関税|旅費|渡航費|航空券|配送料|送料|輸送費|通関|治療費|手術|医療費|入院費|調査費用|弁護士費用|罰金|示談金|手数料|税金|保証金|費用|お金|現金|代金)[^。\n]{0,15}(送って|払って|払え|支払って|支払え|振り?込んで|貸して|立て替えて|がいる|が要る|が必要|かかる|かかります|を請求)/,
-    source: "npa",
-  },
-  {
     id: "romance-money",
     level: "warn",
     label: "会ったことのない相手が、お金や投資の話をしている",
@@ -140,46 +129,6 @@ export const VERDICT_TEXT = {
   caution: "詐欺によく出る特徴があります。相手の言う通りに進める前に、家族か #9110 に相談してください。",
   "no-match": "この道具の規則には当たりませんでした。これは「安全」という意味ではありません。新しい手口は規則にありません。少しでも不安なら #9110 に相談してください。",
 };
-
-// ---- v2: 状況の質問 (docs/DESIGN-v2.md) ----
-export const QUESTIONS = [
-  { id: "q1", text: "相手と、実際に会ったことがありますか?" },
-  { id: "q2", text: "相手から、お金を払う・送る・貸す・投資するように言われましたか?" },
-  { id: "q3", text: "相手と知り合ったのは、SNS・ネット広告・マッチングアプリ・突然の連絡ですか?" },
-  { id: "q4", text: "「利益や荷物を受け取るには、先に手数料・税金・保証金が要る」と言われましたか?" },
-];
-
-export const SITUATION_SOURCES = {
-  hyogo: { name: "兵庫県「まだ会ったことのない異性から金銭の話が出たら詐欺を疑う」", url: "https://web.pref.hyogo.lg.jp/kk14/documents/katudoutuushin.pdf" },
-  npa: SOURCES.npa,
-};
-
-const RANK = { "no-match": 0, caution: 1, high: 2 };
-
-// 「わからない」は「はい」と同じに扱う (見逃しより、念のための相談の方が害が小さい)
-export function judgeSituation(answers = {}) {
-  const yes = (q) => answers[q] === "yes" || answers[q] === "unknown" || answers[q] === undefined;
-  const no = (q) => !yes(q);
-  const reasons = [];
-  if (yes("q4")) reasons.push({ level: "high", label: "受け取る前に、手数料・税金・保証金を求められている", source: "npa" });
-  // q1 だけは「はい」が安全側 (会ったことがある)。「わからない」は会ったことが無い側に倒す。
-  const neverMet = answers.q1 !== "yes";
-  if (neverMet && yes("q2")) reasons.push({ level: "high", label: "会ったことのない相手が、お金の話をしている", source: "hyogo" });
-  if (yes("q3") && yes("q2")) reasons.push({ level: "high", label: "SNS・広告・突然の連絡で知り合った相手が、お金の話をしている", source: "npa" });
-  if (yes("q2") && !reasons.some((r) => r.level === "high")) reasons.push({ level: "caution", label: "お金を払う・送るよう言われている", source: "npa" });
-  if (neverMet && yes("q3") && no("q2")) reasons.push({ level: "caution", label: "会ったことのない、ネットで知り合った相手です。お金の話が出たら、すぐ相談してください", source: "hyogo" });
-  let verdict = "no-match";
-  for (const r of reasons) if (RANK[r.level] > RANK[verdict]) verdict = r.level;
-  return { verdict, reasons };
-}
-
-// 状況の判定と文の判定のうち、重い方を返す
-export function assess({ answers = {}, text = "" } = {}) {
-  const situation = judgeSituation(answers);
-  const message = String(text).trim() ? check(text) : { verdict: "no-match", hits: [] };
-  const verdict = RANK[situation.verdict] >= RANK[message.verdict] ? situation.verdict : message.verdict;
-  return { verdict, situation, message };
-}
 
 // 利用者が自分の AI (ChatGPT・Claude などの無料版) に貼るための文面
 export function buildAiPrompt(text, result) {
