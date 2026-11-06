@@ -1,0 +1,479 @@
+{
+  "decision": "FAIL",
+  "rules_commit": "ea114b4",
+  "lines": {
+    "recall": 0.8,
+    "high_fpr": 0.05,
+    "min_n": 30
+  },
+  "primary": {
+    "recall": {
+      "k": 48,
+      "n": 48,
+      "rate": 1,
+      "ci95": [
+        0.926,
+        1
+      ]
+    },
+    "high_fpr": {
+      "k": 40,
+      "n": 40,
+      "rate": 1,
+      "ci95": [
+        0.912,
+        1
+      ]
+    }
+  },
+  "reference": {
+    "text_only_recall": {
+      "k": 3,
+      "n": 39,
+      "rate": 0.077,
+      "ci95": [
+        0.027,
+        0.203
+      ]
+    },
+    "all_unknown_share_scam": {
+      "k": 0,
+      "n": 48,
+      "rate": 0,
+      "ci95": [
+        0,
+        0.074
+      ]
+    },
+    "all_unknown_share_benign": {
+      "k": 23,
+      "n": 40,
+      "rate": 0.575,
+      "ci95": [
+        0.422,
+        0.715
+      ]
+    },
+    "recall_excluding_all_unknown": {
+      "k": 48,
+      "n": 48,
+      "rate": 1,
+      "ci95": [
+        0.926,
+        1
+      ]
+    },
+    "fpr_any": {
+      "k": 40,
+      "n": 40,
+      "rate": 1,
+      "ci95": [
+        0.912,
+        1
+      ]
+    }
+  },
+  "missed": [],
+  "false_high": [
+    {
+      "id": "b001",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "口座開設手続き完了後、口座番号・パスワードを送付いたします。"
+    },
+    {
+      "id": "b002",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "口座開設手続き完了後、ログインID・パスワード・取引暗証番号・入金先銀行口座を簡易書留郵便で登録のご住所に送付します。"
+    },
+    {
+      "id": "b003",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b004",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b005",
+      "answers": {
+        "q1": "yes",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b006",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "なお、野村證券お取引口座または野村信託銀行の他の口座へのお振込みは、引き続き無料でご利用いただけます。"
+    },
+    {
+      "id": "b007",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "ただし、「当行他店あて扱い」と「他行あて扱い」の取扱手数料は従前より同額であるため、今回の改定による実質的な変更はありません。"
+    },
+    {
+      "id": "b008",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b009",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "2026年4月1日（水）より振込手数料を以下のとおり改定します。"
+    },
+    {
+      "id": "b010",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "上記の振込依頼書をお持ちいただく都度、手数料をお支払いいただきます（１か月分をまとめた後納扱いも可能です）。"
+    },
+    {
+      "id": "b011",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "2025年3月31日（月）10:00~10:30に、取引システムのメンテナンスに伴い、一部サービスの一時停止を予定しております。"
+    },
+    {
+      "id": "b012",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": "ご本人さまの確認が可能な書類のコピー等をご送付いただくようお願いする場合がありますので、あらかじめご了承ください"
+    },
+    {
+      "id": "b013",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": "「お取引目的等確認シート」へのご回答にご協力いただきますようお願い申し上げます。"
+    },
+    {
+      "id": "b014",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": "ハガキに記載のQRコードもしくはURLより専用ページにお進みいただき、回答期限までにご回答くださいますようお願い申し上げます。"
+    },
+    {
+      "id": "b015",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b016",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b017",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b018",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "お手続き結果は申請日から5営業日以内にメールおよびマイページでお知らせいたします。"
+    },
+    {
+      "id": "b019",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b020",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b021",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b022",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "令和5年10月から介護保険料等の特別徴収額が変更となり、年金の振込額が変更となる方へ、年金振込通知書を送付しています"
+    },
+    {
+      "id": "b023",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "令和4年10月から介護保険料等の特別徴収額が変更となり、年金の振込額が変更となる方へ、年金振込通知書を送付しています"
+    },
+    {
+      "id": "b024",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b025",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b026",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b027",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "振込通知は送付しませんので、通帳への記帳等でご確認ください。"
+    },
+    {
+      "id": "b028",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b029",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b030",
+      "answers": {
+        "q1": "unknown",
+        "q2": "yes",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b031",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "このたび、投資信託に関する事務手数料について、サービス提供および事務運営にかかるコストなどを踏まえ、2026年11月2日（月）より次の通り改定します。"
+    },
+    {
+      "id": "b032",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "2026年9月のシステムメンテナンスは1回を予定しております。"
+    },
+    {
+      "id": "b033",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "お客さまにはご不便をおかけいたしますが、何卒ご理解を賜りますようお願い申し上げます。"
+    },
+    {
+      "id": "b034",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": "スマホでＱＲコードを読み取り、回答期限までにご回答ください。"
+    },
+    {
+      "id": "b035",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b036",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "no",
+        "q4": "unknown"
+      },
+      "text": "何卒、ご理解、ご協力をお願いいたします。"
+    },
+    {
+      "id": "b037",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "ご回答いただきますよう、ご協力をお願いいたします。"
+    },
+    {
+      "id": "b038",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": "令和4年10月～令和5年1月分の児童手当を2月10日㈮に振り込みますので、指定口座の確認をお願いします。"
+    },
+    {
+      "id": "b039",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    },
+    {
+      "id": "b040",
+      "answers": {
+        "q1": "unknown",
+        "q2": "unknown",
+        "q3": "unknown",
+        "q4": "unknown"
+      },
+      "text": ""
+    }
+  ]
+}
